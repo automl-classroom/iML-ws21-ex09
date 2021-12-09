@@ -1,0 +1,87 @@
+\documentclass[a4paper]{article}
+\usepackage[a4paper,
+            bindingoffset=0.2in,
+            left=0.8in,
+            right=0.8in,
+            top=0.8in,
+            bottom=1.6in,
+            footskip=.8in]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[]{amsmath}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\hypersetup{colorlinks = true}
+
+\usepackage{xcolor}
+
+\begin{document}
+
+{\noindent\LARGE Exercise 9\par}
+\vspace{8pt}
+{\noindent\huge\textbf{Evaluation}}
+\vspace{20pt}
+
+\noindent
+Evaluating explanations is hard, because typically there is no groundtruth data available.
+Additionally, the evaluation heavily depends on the stakeholder and their objective.
+In this exercise, the task is to implement some proxy metrics based on feature removal.
+
+\par\noindent\rule{\textwidth}{0.2pt}
+\begin{itemize}
+    \item You can get a bonus point for this exercise if you pass at least 85\% of the tests. Code is automatically tested after pushing. If your tests fail, either your code is wrong, or you solved the task differently. In the second case, we will manually check your solution.
+    \item Three collected bonus points result in a 0.33 increase of the final grade.
+    \item You are allowed to work in groups with up to three people. You do not need to specify your ErgebnisPIN as it is already collected from the entrance test.
+    \item Follow the `README.md` for further instructions.
+    \item Finish this exercise by \color{red}{17th December, 2021 at 11:59 pm.}
+\end{itemize}
+\par\noindent\rule{\textwidth}{0.2pt}
+\vspace{10pt}
+
+\noindent
+\subsection*{Comprehensiveness and Sufficiency}
+The idea behind both comprehensiveness and suffiency stems from the following hypothesis:
+\begin{center}
+    \textit{If a feature is important, then removing it should result in a significant change of the prediction.}
+\end{center}
+The comprehensiveness measures the difference between the original prediction and the prediction after removing important features:
+
+\begin{equation}
+    \text{comprehensiveness} = m(x_i)_j - m(x_i \setminus r_i)_j
+\end{equation}
+where $m$ is the model, $x_i$ are the features of instance $i$ and $x_i \setminus r_i$ is the same instance $i$ with some of its most important features $r_i$ removed or replaced by a baseline value.
+In our case, we want to measure the difference in output probability of the predicted class between the original prediction and the prediction with some features removed.
+Before complete the \textit{compute\_comprehensiveness} function, you have to complete \textit{generate\_explanations}, to generate an explanation for each instance in the dataset based on the input gradient saliency method.
+Additionally, fill in the helper functions \textit{get\_most\_important\_features} and \textit{get\_predictions}.\\
+
+The sufficiency metric assumes that the most important features alone should be sufficient to make a good prediction:
+\begin{equation}
+    \text{sufficiency} = m(x_i)_j - m(r_i)_j
+\end{equation}
+It measures the difference between the predictions for an original instance and the prediction for the most important features of that instance.
+Complete \textit{compute\_sufficiency} that computes this metric for a given model and a dataset.
+\\
+
+\noindent Associated file: \textit{evaluation.py}.
+
+
+
+\noindent
+\subsection*{Remove and Retrain}
+The above metrics are computed without retraining the model.
+The problem is that the partial instances created by removing some features can be considered out-of-distribution examples; one could argue that we cannot expect the model to perform any good on these examples, as it was not trained on similar examples.
+To overcome this issue one can retrain the model after removing the most important features from a dataset and measure the resulting performance.
+If a feature is important, then removing it from the dataset should result in reduced performance of the retrained model.
+The hypothesis is that
+\begin{itemize}
+    \item If the test accuracy drops significantly, the removed input features were informative, and thus important.
+    \item If the test accuracy does not drop, the removed input features were uninformative or redundant.
+\end{itemize}
+Complete the \textit{remove\_and\_retrain} function that trains a new model after removing the $k$ most important features of each instance in the train and test data.
+\\
+
+\noindent Associated file: \textit{evaluation.py}.
+
+\subsection*{Visualization}
+Finally, complete the \textit{plot\_scores} function, that can be used to plot a series of comprehensiveness, sufficiency or accuracy scores in a line chart.
+Think about what insights can you takeaway from each plot.
+\end{document}
